@@ -528,6 +528,7 @@ push(@SAFECMDLIST, qr/^QLEFTBRACE$/, qr/^QRIGHTBRACE$/);
   my $pat5 = '(?:[^{}]|\{'.$pat4.'\})*';
   my $pat6 = '(?:[^{}]|\{'.$pat5.'\})*';
   my $brat0 = '(?:[^\[\]]|\\\[|\\\])*'; 
+  my $abrat0 = '(?:[^<>])*';
 
 ###print STDERR "DEBUG pat1 $pat1\n      pat2 $pat6\n";
   my $quotemarks = '(?:\'\')|(?:\`\`)';
@@ -544,7 +545,7 @@ push(@SAFECMDLIST, qr/^QLEFTBRACE$/, qr/^QRIGHTBRACE$/);
 ###  my $word='(?:[-\p{IsL}*]|\\\\[\"\'\`~^][\p{IsL}A-Za-z\*])+';
 ### standard $cmdoptseq without intervening spaces
 ###pre-0.3  my $cmdoptseq='\\\\[\w\d\*]+(?:\['.$brat0.'\]|\{'. $pat6 . '\}|\(' . $coords .'\))*';
-  my $cmdoptseq='\\\\[\w\d\*]+'.$extraspace.'(?:(?:\['.$brat0.'\]|\{'. $pat6 . '\}|\(' . $coords .'\))'.$extraspace.')*';
+  my $cmdoptseq='\\\\[\w\d\*]+'.$extraspace.'(?:(?:<'.$abrat0.'>|\['.$brat0.'\]|\{'. $pat6 . '\}|\(' . $coords .'\))'.$extraspace.')*';
 ###pre-0.3  my $oneletcmd='(?:\\\\.|[_\^])(?:\['.$brat0.'\]|\{'. $pat6 . '\})*';
   my $backslashnl='\\\\\n';
   my $oneletcmd='\\\\.\*?(?:\['.$brat0.'\]|\{'. $pat6 . '\})*';
@@ -1977,7 +1978,7 @@ sub postprocess {
       }
       # or protect \cite commands with \mbox
       if ($CITECMD) {
-	$delblock=~s/(\\($CITECMD)${extraspace}(?:\[$brat0\]${extraspace}){0,2}\{$pat6\})(\s*)/\\mbox{$AUXCMD\n$1\n}$AUXCMD\n/msg ;
+	$delblock=~s/(\\($CITECMD)${extraspace}(?:<$abrat0>${extraspace})?(?:\[$brat0\]${extraspace}){0,2}\{$pat6\})(\s*)/\\mbox{$AUXCMD\n$1\n}$AUXCMD\n/msg ;
       } 
       # if MBOXINLINEMATH is set, protect inlined math environments with an extra mbox
       if ( $MBOXINLINEMATH ) {
@@ -2007,7 +2008,7 @@ sub postprocess {
       }
       if ($CITECMD) {
 	my $addblockbefore=$addblock;
-	$addblock=~ s/(\\($CITECMD)${extraspace}(?:\[$brat0\]${extraspace}){0,2}\{$pat2\})(\s*)/\\mbox{$AUXCMD\n$1\n}$AUXCMD\n/msg ;
+	$addblock=~ s/(\\($CITECMD)${extraspace}(?:<$abrat0>${extraspace})?(?:\[$brat0\]${extraspace}){0,2}\{$pat2\})(\s*)/\\mbox{$AUXCMD\n$1\n}$AUXCMD\n/msg ;
 ###	print STDERR "DEBUG: addblock before:|$addblockbefore|\n";
 ###	print STDERR "DEBUG: addblock after: |$addblock|\n";
       }
